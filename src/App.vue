@@ -1,26 +1,51 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <input type="text" v-model="searchTerm" />
+    <Cart />
+    <SelectProduct />
+    <Products :allProducts="filterProducts" />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// Components
+import Products from '@/components/products/Products.vue'
+import Cart from '@/components/Cart.vue'
+import SelectProduct from '@/components/SelectProduct.vue'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+    name: 'App',
+    components: {
+        Products,
+        Cart,
+        SelectProduct,
+    },
+    data() {
+        return {
+            searchTerm: '',
+        }
+    },
+    methods: {
+        ...mapActions(['fetchProducts']),
+    },
+    computed: {
+        ...mapGetters(['allProducts']),
+
+        filterProducts() {
+            if (this.searchTerm.length > 2) {
+                return this.allProducts.filter((product) =>
+                    product.title
+                        .toLowerCase()
+                        .includes(this.searchTerm.toLowerCase())
+                )
+            } else {
+                return this.allProducts
+            }
+        },
+    },
+    created() {
+        this.fetchProducts()
+    },
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
